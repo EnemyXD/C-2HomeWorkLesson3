@@ -28,6 +28,7 @@ namespace MyGame
         public static Random rnd = new Random();
 
         public static int health = 3;
+        public static int userPoint = 0;
 
         static Game()
         {
@@ -114,6 +115,8 @@ namespace MyGame
 
             Buffer.Graphics.DrawString("Аптечки(Х): " + health, SystemFonts.DefaultFont, Brushes.White, 60, 0);
 
+            Buffer.Graphics.DrawString("Астероидов сбито: " + userPoint, SystemFonts.DefaultFont, Brushes.White, 140, 0);
+
             Buffer.Render();
 
         }
@@ -134,6 +137,7 @@ namespace MyGame
                 {
                     string events1 = "Попадание по астероиду.";
                     LogUpdate(events1);
+                    userPoint++;
                     System.Media.SystemSounds.Hand.Play();
                     _asteroids[i] = null;
                     _bullet = null;

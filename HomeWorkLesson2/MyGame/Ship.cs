@@ -46,6 +46,9 @@ namespace MyGame
         {
             MessageDie?.Invoke();
         }
+        /// <summary>
+        /// лечение корабля
+        /// </summary>
         public void Health()
         {
             if (Game.health > 0)
