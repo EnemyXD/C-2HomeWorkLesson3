@@ -20,8 +20,8 @@ namespace MyGame
         }
         public override void Update()
         {
-            Pos.X = Pos.X + 3;
-            if (Pos.X > Game.Width) Pos.X = 0;
+            Pos.X = Pos.X + 10;
+            //if (Pos.X > Game.Width) Pos.X = 0;
 
         }
     }

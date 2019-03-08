@@ -16,16 +16,23 @@ namespace MyGame
         public static Asteroid[] _asteroids;
         public static Planet _planet;
 
+        private static Ship _ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(10, 10));
+
         private static BufferedGraphicsContext _context;
         public static BufferedGraphics Buffer;
 
         public static int Width { get; set; }
         public static int Height { get; set; }
 
+        private static Timer _timer = new Timer();
+        public static Random rnd = new Random();
+
         static Game()
         {
 
         }
+
+        
 
         public static void Init(Form form)
         {
@@ -48,9 +55,20 @@ namespace MyGame
 
             Buffer = _context.Allocate(g, new Rectangle(0, 0, Width, Height));
 
-            Timer timer = new Timer();
-            timer.Start();
-            timer.Tick += Timer_Tick;
+            
+            _timer.Start();
+            _timer.Tick += Timer_Tick;
+
+            form.KeyDown += Form_KeyDown;
+
+            Ship.MessageDie += Finish;
+        }
+
+        private static void Form_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter) _bullet = new Bullet(new Point(_ship.Rect.X + 10, _ship.Rect.Y + 4), new Point(4, 0), new Size(4, 1));
+            if (e.KeyCode == Keys.Up) _ship.Up();
+            if (e.KeyCode == Keys.Down) _ship.Down();
         }
 
         public static void Draw()
@@ -69,18 +87,21 @@ namespace MyGame
             var r = rnd.Next(5, 50);
             foreach (BaseObject obj in _asteroids)
             {
-                obj.Draw();
-                if (obj.Collision(_bullet))
-                {
-                    System.Media.SystemSounds.Hand.Play();
-                    for (int i = 0; i < _asteroids.Length; i++)
-                    {
-                        if (obj == _asteroids[i]) _asteroids[i] = new Asteroid(new Point(0, rnd.Next(0, Game.Height)), new Point(-r / 5, r), new Size(r, r));
-                    }
-                    _bullet = new Bullet(new Point(0, 200), new Point(5, 0), new Size(40, 10));
-                }
+                obj?.Draw();
+                //if (obj.Collision(_bullet))
+                //{
+                //    System.Media.SystemSounds.Hand.Play();
+                //    for (int i = 0; i < _asteroids.Length; i++)
+                //    {
+                //        if (obj == _asteroids[i]) _asteroids[i] = new Asteroid(new Point(0, rnd.Next(0, Game.Height)), new Point(-r / 5, r), new Size(r, r));
+                //    }
+                //    _bullet = new Bullet(new Point(0, 200), new Point(5, 0), new Size(40, 10));
+                //}
             }
-            _bullet.Draw();
+            _bullet?.Draw();
+            _ship?.Draw();
+            if (_ship != null)
+                Buffer.Graphics.DrawString("Energy" + _ship.Energy, SystemFonts.DefaultFont, Brushes.White, 0, 0);
 
             Buffer.Render();
 
@@ -94,16 +115,34 @@ namespace MyGame
 
             _planet.Update();
 
-            foreach (BaseObject obj in _asteroids)
-                obj.Update();
+            for (int i = 0; i < _asteroids.Length; i++)
+            {
+                if (_asteroids[i] == null) continue;
+                _asteroids[i].Update();
+                if (_bullet != null && _bullet.Collision(_asteroids[i]))
+                {
+                    System.Media.SystemSounds.Hand.Play();
+                    _asteroids[i] = null;
+                    _bullet = null;
+                    continue;
+                }
+                if (!_ship.Collision(_asteroids[i])) continue;
+                var rnd = new Random();
+                _ship?.EnergyLow(rnd.Next(1, 10));
+                System.Media.SystemSounds.Hand.Play();
+                if (_ship.Energy <= 0) Finish();
+            }
 
-            _bullet.Update();
+            //foreach (BaseObject obj in _asteroids)
+            //    obj.Update();
+
+            _bullet?.Update();
         }
 
         public static void Load()
         {
             _objs = new BaseObject[30];
-            _bullet = new Bullet(new Point(0, 200), new Point(5, 0), new Size(40, 10));
+            _bullet = new Bullet(new Point(0, 200), new Point(5, 0), new Size(4, 1));
             _asteroids = new Asteroid[3];
             _planet = new Planet(new Point(-199, 250), new Point(5, 0), new Size(50, 50));
             var rnd = new Random();
@@ -127,6 +166,15 @@ namespace MyGame
 
             Update();
             Draw();
+
+        }
+
+        public static void Finish()
+        {
+
+            _timer.Stop();
+            Buffer.Graphics.DrawString("The End", new Font(FontFamily.GenericSansSerif, 60, FontStyle.Underline), Brushes.White, 200, 100);
+            Buffer.Render();
 
         }
 

@@ -9,6 +9,7 @@ namespace MyGame
 {
     abstract class BaseObject
     {
+        public delegate void Message();
 
         protected Point Pos;
         protected Point Dir;
