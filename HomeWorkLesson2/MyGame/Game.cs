@@ -25,9 +25,9 @@ namespace MyGame
         public static int Height { get; set; }
 
         private static Timer _timer = new Timer();
-        public static Random rnd = new Random();        
+        public static Random rnd = new Random();
 
-        
+        public static int health = 3;
 
         static Game()
         {
@@ -68,6 +68,8 @@ namespace MyGame
             form.KeyDown += Form_KeyDown;
 
             Ship.MessageDie += Finish;
+            
+            
         }
 
         private static void Form_KeyDown(object sender, KeyEventArgs e)
@@ -75,6 +77,7 @@ namespace MyGame
             if (e.KeyCode == Keys.Enter) _bullet = new Bullet(new Point(_ship.Rect.X + 10, _ship.Rect.Y + 4), new Point(4, 0), new Size(4, 1));
             if (e.KeyCode == Keys.Up) _ship.Up();
             if (e.KeyCode == Keys.Down) _ship.Down();
+            if (e.KeyCode == Keys.X) _ship.Health();
         }
 
         public static void Draw()
@@ -108,6 +111,8 @@ namespace MyGame
             _ship?.Draw();
             if (_ship != null)
                 Buffer.Graphics.DrawString("Energy" + _ship.Energy, SystemFonts.DefaultFont, Brushes.White, 0, 0);
+
+            Buffer.Graphics.DrawString("Аптечки(Х): " + health, SystemFonts.DefaultFont, Brushes.White, 60, 0);
 
             Buffer.Render();
 

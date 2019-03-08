@@ -12,7 +12,7 @@ namespace MyGame
 
         public static event Message MessageDie;
 
-        private int _energy = 1;
+        private int _energy = 100;
         public int Energy => _energy;
 
         public void EnergyLow(int n)
@@ -45,6 +45,15 @@ namespace MyGame
         public void Die()
         {
             MessageDie?.Invoke();
+        }
+        public void Health()
+        {
+            if (Game.health > 0)
+            {
+                _energy += 30;
+                if (_energy > 100) _energy = 100;
+                Game.health = Game.health - 1;
+            }
         }
 
     }
