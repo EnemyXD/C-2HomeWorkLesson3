@@ -25,7 +25,9 @@ namespace MyGame
         public static int Height { get; set; }
 
         private static Timer _timer = new Timer();
-        public static Random rnd = new Random();
+        public static Random rnd = new Random();        
+
+        
 
         static Game()
         {
@@ -36,6 +38,10 @@ namespace MyGame
 
         public static void Init(Form form)
         {
+            _timer.Start();
+
+            //log = Convert.ToString(DateTime.Now);
+            //Console.WriteLine($"{log}: Начало инициализации.");
 
             Graphics g;
 
@@ -56,7 +62,7 @@ namespace MyGame
             Buffer = _context.Allocate(g, new Rectangle(0, 0, Width, Height));
 
             
-            _timer.Start();
+            
             _timer.Tick += Timer_Tick;
 
             form.KeyDown += Form_KeyDown;
@@ -121,6 +127,8 @@ namespace MyGame
                 _asteroids[i].Update();
                 if (_bullet != null && _bullet.Collision(_asteroids[i]))
                 {
+                    string events1 = "Попадание по астероиду.";
+                    LogUpdate(events1);
                     System.Media.SystemSounds.Hand.Play();
                     _asteroids[i] = null;
                     _bullet = null;
@@ -130,6 +138,8 @@ namespace MyGame
                 var rnd = new Random();
                 _ship?.EnergyLow(rnd.Next(1, 10));
                 System.Media.SystemSounds.Hand.Play();
+                string events = "Столкновение астероида и корабля.";
+                LogUpdate(events);
                 if (_ship.Energy <= 0) Finish();
             }
 
@@ -167,7 +177,7 @@ namespace MyGame
             Update();
             Draw();
 
-        }
+        }      
 
         public static void Finish()
         {
@@ -175,8 +185,19 @@ namespace MyGame
             _timer.Stop();
             Buffer.Graphics.DrawString("The End", new Font(FontFamily.GenericSansSerif, 60, FontStyle.Underline), Brushes.White, 200, 100);
             Buffer.Render();
+            string events = "Конец игры.";
+            LogUpdate(events);
+        }
+        /// <summary>
+        /// Обновляет лог консоли
+        /// </summary>
+        /// <param name="events">событие для обновления</param>
+        public static void LogUpdate(String events)
+        {
+
+            string log = Convert.ToString(DateTime.Now);
+            Console.WriteLine($"{log} {events}");
 
         }
-
     }
 }

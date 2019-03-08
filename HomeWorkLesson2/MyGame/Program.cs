@@ -25,7 +25,7 @@ namespace MyGame
                 Width = Screen.PrimaryScreen.Bounds.Width,
                 Height = Screen.PrimaryScreen.Bounds.Height
             };
-        init:
+            init:
             try
             {
 
